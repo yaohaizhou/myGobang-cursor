@@ -14,7 +14,7 @@ SRCS = main.cpp Board.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 # Executable name
-EXEC = gomoku
+EXEC = go
 
 # Default target
 all: $(EXEC)
