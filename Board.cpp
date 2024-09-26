@@ -69,42 +69,42 @@ void Board::setGameOver(Player winning_player) {
 }
 
 void Board::drawEndGameMessage(sf::RenderWindow &window) {
-    // Create a semi-transparent background
-    sf::RectangleShape background(sf::Vector2f(300, 100));
-    background.setFillColor(sf::Color(0, 0, 0, 200)); // Black with 200/255 alpha
-    background.setPosition(120, 220); // Centered on a 540x540 window
+  // Create a semi-transparent background
+  sf::RectangleShape background(sf::Vector2f(300, 100));
+  background.setFillColor(sf::Color(0, 0, 0, 200)); // Black with 200/255 alpha
+  background.setPosition(120, 220); // Centered on a 540x540 window
 
-    // Create the message text using basic shapes
-    sf::Text message;
-    if (winner == Player::Human) {
-        message.setString("Human Wins!");
-        message.setFillColor(sf::Color::White);
-    } else if (winner == Player::AI) {
-        message.setString("AI Wins!");
-        message.setFillColor(sf::Color::White);
-    } else {
-        message.setString("Game Over!");
-        message.setFillColor(sf::Color::Yellow);
-    }
+  // Create the message text using basic shapes
+  sf::Text message;
+  if (winner == Player::Human) {
+    message.setString("Human Wins!");
+    message.setFillColor(sf::Color::White);
+  } else if (winner == Player::AI) {
+    message.setString("AI Wins!");
+    message.setFillColor(sf::Color::White);
+  } else {
+    message.setString("Game Over!");
+    message.setFillColor(sf::Color::Yellow);
+  }
 
-    // Load the font
-    sf::Font font;
-    if (!font.loadFromFile("font/arial.ttf")) {
-        // Handle font loading error
-        std::cerr << "Error loading font" << std::endl;
-        return;
-    }
-    
-    // Set the font for the message
-    message.setFont(font);
-    message.setCharacterSize(24); // Set font size
+  // Load the font
+  sf::Font font;
+  if (!font.loadFromFile("font/arial.ttf")) {
+    // Handle font loading error
+    std::cerr << "Error loading font" << std::endl;
+    return;
+  }
 
-    // Position the message
-    message.setPosition(170, 250); // Adjust as needed
-    
-    // Draw the background and message
-    window.draw(background);
-    window.draw(message);
+  // Set the font for the message
+  message.setFont(font);
+  message.setCharacterSize(24); // Set font size
+
+  // Position the message
+  message.setPosition(170, 250); // Adjust as needed
+
+  // Draw the background and message
+  window.draw(background);
+  window.draw(message);
 }
 
 void Board::checkEnd() {
@@ -180,7 +180,7 @@ void Board::out(int i, int j) {
 void Board::player1() {
   if (game_over)
     return;
-  current_player = Player::Human;
+  current_player = Player::AI;
   if (FIRST) {
     getMouseLoc();
   } else {
@@ -199,7 +199,7 @@ void Board::player1() {
 void Board::player2() {
   if (game_over)
     return;
-  current_player = Player::AI;
+  current_player = Player::Human;
   if (FIRST) {
     AI_1_MAX();
   } else {

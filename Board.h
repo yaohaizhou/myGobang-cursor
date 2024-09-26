@@ -25,7 +25,7 @@
 ///棋盘样式
 static constexpr int BOARD_SIZE = 15;
 enum class CellState { Empty = 0, Black = 1, White = 2, WALL = 3 };
-enum class Player { None = 0, Human = 1, AI = 2 };
+enum class Player { None = 0, Human = 2, AI = 1 };
 
 class Board {
 public:
