@@ -10,15 +10,8 @@
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
-#include <cstdio>
-#include <iomanip>
 #include <iostream>
-///棋盘样式
-#define N 15    ///棋盘为15*15的方格
-#define WALL 3  ///棋盘四周围一圈墙
-#define EMPTY 0 ///空地为0
-#define BLACK 1 ///黑为1
-#define WHITE 2 ///白为0
+#include <vector>
 ///下棋模式
 #define DEBUG                                                                  \
   0 /// 1为开启debug，0为关闭debug，开启debug会在棋局最后显示棋盘各点的评估值
@@ -28,59 +21,80 @@
 #define HEURISTIC 1 /// 1为打开启发式搜索，0为关闭，视情况打开
 /// AI Intelligence
 #define AI_MAX_CHOICE 20 /// AI在启发式搜索时每一步考虑的最大位置数量
+
+///棋盘样式
+static constexpr int BOARD_SIZE = 15;
+enum class CellState { Empty = 0, Black = 1, White = 2, WALL = 3 };
+enum class Player { None = 0, Human = 1, AI = 2 };
+
 class Board {
 public:
-  Board(sf::RenderWindow *window);
-  ~Board(){};
-  void printBoard();
-  void out(int, int);
+  explicit Board(sf::RenderWindow *window);
+  ~Board() = default;
   void play();
-  bool checkAvailable(int, int);
-  bool checkSame(int, int);
   void checkEnd();
-  int sameSum(int, int, int);
-  void player1();
-  void player2();
-  int calculate(int, int);
-  int sumMakeFive(int, int);
-  int sumLiveFour(int, int);
-  int sumLiveThree(int, int);
-  int sumMakeFour(int, int);
-  int sumFive(int, int);
+  bool isGameOver() { return game_over; }
+  void setGameOver(Player winning_player);
+
+  void AI_1_MAX();
+  int AI_2_MIN(int alpha);
+  int AI_3_MAX(int alpha, int beta);
+
+  void printBoard();
+  void drawEndGameMessage(sf::RenderWindow &window);
+
   int getRow();
   int getCol();
-  void getMouseLoc();
-  int getScore(int, int);
-  void AI_1_MAX();
-  int AI_2_MIN(int);
-  int AI_3_MAX(int, int);
+  void out(int, int);
+  void player1();
+  void player2();
 
+private:
+  struct Cell {
+    int row;
+    int col;
+    int score;
+
+    bool operator<(const Cell &other) {
+      return score > other.score; // For descending order
+    }
+  };
+
+  std::array<std::array<CellState, BOARD_SIZE + 2>, BOARD_SIZE + 2> chess;
   typedef struct order {
     int orderi;
     int orderj;
     int orderpoint;
   } Order;
-  Order orderSort[N * N];
+  Order orderSort[BOARD_SIZE * BOARD_SIZE];
 
   static bool cmp(Order, Order);
 
-  bool is_end;
+  int row, col;
+  Player current_player;
+  bool is_end = true;
   bool game_over;
-  int winner; // 0 for no winner, 1 for player 1, 2 for player 2
-
-  // Add these methods
-  bool isGameOver() const { return game_over; }
-  void setGameOver(int winning_player);
-  void drawEndGameMessage(sf::RenderWindow &window);
-
-private:
-  int chess[N + 2][N + 2]; ///棋盘周围有一圈墙
-  int row, col, turn; /// row为纵向的行,col为横向的列,turn为哪方执子,黑为1,白为2
-  std::array<int, 8>
-      dx; /// flat技术，8个dx和dy组成8个方向，指向一个棋子的周围8个方向，把各方向统一为直线考虑
-  std::array<int, 8> dy;
-  int distance; ///返回距离值，在计算是否满足活四、活三时有用
+  int distance;
+  Player winner;
   sf::RenderWindow *windowPtr;
+
+  static const int dx[8];
+  static const int dy[8];
+
+  bool checkAvailable(int x, int y);
+  bool checkSame(int x, int y);
+  int sameSum(int x, int y, int direction);
+  int calculate(int x, int y);
+  int getScore(int x, int y);
+  void getMouseLoc();
+
+  int sumMakeFive(int x, int y);
+  int sumLiveFour(int x, int y);
+  int sumLiveThree(int x, int y);
+  int sumMakeFour(int x, int y);
+  int sumFive(int x, int y);
+
+  std::vector<Cell> getTopMoves(int num_moves);
 };
 
 #endif // BOARD_H_INCLUDED

@@ -7,6 +7,9 @@
  */
 #include "Board.h"
 
+const int Board::dx[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+const int Board::dy[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+
 /**
  * @name: Board
  * @msg: 构造函数，用于初始化参数
@@ -15,53 +18,52 @@
  */
 Board::Board(sf::RenderWindow *window) : windowPtr(window) {
   int i, j;
-  for (i = 1; i < N + 1; i++)
-    for (j = 1; j < N + 1; j++)
-      chess[i][j] = 0; ///初始化空地
-  for (i = 0; i < N + 2; i++) {
-    chess[i][0] = WALL; ///初始化墙
-    chess[i][N + 1] = WALL;
+  for (i = 1; i < BOARD_SIZE + 1; i++)
+    for (j = 1; j < BOARD_SIZE + 1; j++)
+      chess[i][j] = CellState::Empty; ///初始化空地
+  for (i = 0; i < BOARD_SIZE + 2; i++) {
+    chess[i][0] = CellState::WALL; ///初始化墙
+    chess[i][BOARD_SIZE + 1] = CellState::WALL;
   }
-  for (j = 0; j < N + 2; j++) {
-    chess[0][j] = WALL;
-    chess[N + 1][j] = WALL;
+  for (j = 0; j < BOARD_SIZE + 2; j++) {
+    chess[0][j] = CellState::WALL;
+    chess[BOARD_SIZE + 1][j] = CellState::WALL;
   }
   if (DEBUG) {
     ///测试用五连+活四
-    chess[8][8] = BLACK;
-    chess[9][8] = BLACK;
-    chess[10][8] = BLACK;
-    chess[11][8] = BLACK;
-    chess[8][9] = WHITE;
-    chess[9][9] = WHITE;
-    chess[10][9] = WHITE;
-    chess[11][9] = WHITE;
+    chess[8][8] = CellState::Black;
+    chess[9][8] = CellState::Black;
+    chess[10][8] = CellState::Black;
+    chess[11][8] = CellState::Black;
+    chess[8][9] = CellState::White;
+    chess[9][9] = CellState::White;
+    chess[10][9] = CellState::White;
+    chess[11][9] = CellState::White;
     ///测试用冲四
-    chess[8][1] = BLACK;
-    chess[9][1] = BLACK;
-    chess[10][1] = BLACK;
-    chess[7][1] = WHITE;
+    chess[8][1] = CellState::Black;
+    chess[9][1] = CellState::Black;
+    chess[10][1] = CellState::Black;
+    chess[7][1] = CellState::White;
     ///测试用活四
-    chess[8][4] = BLACK;
-    chess[9][4] = BLACK;
-    chess[11][4] = BLACK;
+    chess[8][4] = CellState::Black;
+    chess[9][4] = CellState::Black;
+    chess[11][4] = CellState::Black;
     ///测试用五连
-    chess[8][12] = BLACK;
-    chess[9][12] = BLACK;
-    chess[10][12] = BLACK;
-    chess[11][12] = BLACK;
+    chess[8][12] = CellState::Black;
+    chess[9][12] = CellState::Black;
+    chess[10][12] = CellState::Black;
+    chess[11][12] = CellState::Black;
   }
-  dx = {1, 1, 0, -1, -1, -1, 0, 1}; /// flat技术的8个方向向量
-  dy = {0, 1, 1, 1, 0, -1, -1, -1};
   is_end = true;
   game_over = false;
-  winner = 0;
+  winner = Player::None;
+
   for (int i = 0; i < AI_MAX_CHOICE; ++i) {
     orderSort[i] = {0, 0, 0}; // Initialize all fields to 0
   }
 }
 
-void Board::setGameOver(int winning_player) {
+void Board::setGameOver(Player winning_player) {
   game_over = true;
   winner = winning_player;
 }
@@ -71,11 +73,11 @@ void Board::drawEndGameMessage(sf::RenderWindow &window) {
   text.setCharacterSize(20);
   text.setPosition(550, 10);
 
-  if (winner == 1) {
-    text.setString("Black Win!");
+  if (winner == Player::Human) {
+    text.setString("Human Win!");
     text.setFillColor(sf::Color::Black);
-  } else if (winner == 2) {
-    text.setString("White Win!");
+  } else if (winner == Player::AI) {
+    text.setString("AI Win!");
     text.setFillColor(sf::Color::White);
   }
 
@@ -86,7 +88,7 @@ void Board::checkEnd() {
   for (int u = 0; u < 4; u++) {
     if ((sameSum(u, getRow(), getCol()) + sameSum(u + 4, getRow(), getCol())) >=
         4) {
-      setGameOver(turn);
+      setGameOver(current_player);
       is_end = false;
       return;
     }
@@ -129,13 +131,13 @@ void Board::printBoard() {
  */
 void Board::out(int i, int j) {
   sf::RenderWindow &window = *static_cast<sf::RenderWindow *>(windowPtr);
-  if (chess[i / 30 - 1][j / 30 - 1] == 1) {
+  if (chess[i / 30 - 1][j / 30 - 1] == CellState::Black) {
     sf::CircleShape circle(15);
     circle.setPosition(i - 15, j - 15);
     circle.setFillColor(sf::Color::Black);
     window.draw(circle);
   }
-  if (chess[i / 30 - 1][j / 30 - 1] == 2) {
+  if (chess[i / 30 - 1][j / 30 - 1] == CellState::White) {
     sf::CircleShape circle(15);
     circle.setPosition(i - 15, j - 15);
     circle.setFillColor(sf::Color::White);
@@ -151,13 +153,13 @@ void Board::out(int i, int j) {
 void Board::player1() {
   if (game_over)
     return;
-  turn = 1;
+  current_player = Player::Human;
   if (FIRST) {
     getMouseLoc();
   } else {
     AI_1_MAX();
   }
-  chess[row][col] = 1;
+  chess[row][col] = CellState::Black;
   printBoard();
   checkEnd();
 }
@@ -170,13 +172,13 @@ void Board::player1() {
 void Board::player2() {
   if (game_over)
     return;
-  turn = 2;
+  current_player = Player::AI;
   if (FIRST) {
     AI_1_MAX();
   } else {
     getMouseLoc();
   }
-  chess[row][col] = 2;
+  chess[row][col] = CellState::White;
   printBoard();
   checkEnd();
 }
@@ -186,7 +188,9 @@ void Board::player2() {
  * @param {int} row {int} col 传入的行和列，非全局变量行和列
  * @return: bool 相同则返回true，不同返回false
  */
-bool Board::checkSame(int row, int col) { return (chess[row][col] == turn); }
+bool Board::checkSame(int row, int col) {
+  return (chess[row][col] == static_cast<CellState>(current_player));
+}
 /**
  * @name: sameSum
  * @msg: 检查在一个方向上相同棋子个数
@@ -210,7 +214,7 @@ int Board::sameSum(int u, int row, int col) {
  */
 bool Board::checkAvailable(int row, int col) {
   return (row >= 1 && row <= 15 && col >= 1 && col <= 15 &&
-          chess[row][col] == 0);
+          chess[row][col] == CellState::Empty);
 }
 /// sumMakeFive要领
 ///在8个方向上求成五点，对于每个方向，从当前位置往前延伸，
@@ -232,7 +236,7 @@ int Board::sumMakeFive(int row, int col) {
     int sumk = 0;
     for (i = 1; checkSame(row + i * dx[u], col + i * dy[u]) || flag; i++) {
       if (!checkSame(row + i * dx[u], col + i * dy[u])) {
-        if (chess[row + i * dx[u]][col + i * dy[u]] != EMPTY) {
+        if (chess[row + i * dx[u]][col + i * dy[u]] != CellState::Empty) {
           sumk -= 10;
         }
         flag = false;
@@ -263,9 +267,10 @@ int Board::sumLiveFour(int row, int col) {
     ///原本写的是这样的，后面的函数后运行，使用的distance就是后面那个
     ///所以活四一直没有匹配上
     {
-      if (chess[row + distance * dx[u]][col + distance * dy[u]] == EMPTY &&
+      if (chess[row + distance * dx[u]][col + distance * dy[u]] ==
+              CellState::Empty &&
           chess[row + (distance - 5) * dx[u]][col + (distance - 5) * dy[u]] ==
-              EMPTY)
+              CellState::Empty)
         sum++;
     }
   }
@@ -273,7 +278,7 @@ int Board::sumLiveFour(int row, int col) {
 }
 /**
  * @name: sumMakeFour
- * @msg: 冲四总数=成五点总数-2*活四总数
+ * @msg: 冲四总数=五点总数-2*活四总数
  * @param {int} row {int} col  传入的行和列
  * @return: {int} sum 总数
  */
@@ -290,16 +295,18 @@ int Board::sumLiveThree(int row, int col) {
   int u, sum = 0;
   for (u = 0; u < 4; u++) {
     if ((sameSum(u + 4, row, col) + sameSum(u, row, col)) >= 2) {
-      if ((chess[row + distance * dx[u]][col + distance * dy[u]] == EMPTY &&
+      if ((chess[row + distance * dx[u]][col + distance * dy[u]] ==
+               CellState::Empty &&
            chess[row + (distance - 4) * dx[u]][col + (distance - 4) * dy[u]] ==
-               EMPTY &&
+               CellState::Empty &&
            chess[row + (distance - 5) * dx[u]][col + (distance - 5) * dy[u]] ==
-               EMPTY) ||
-          (chess[row + distance * dx[u]][col + distance * dy[u]] == EMPTY &&
+               CellState::Empty) ||
+          (chess[row + distance * dx[u]][col + distance * dy[u]] ==
+               CellState::Empty &&
            chess[row + (distance + 1) * dx[u]][col + (distance + 1) * dy[u]] ==
-               EMPTY &&
+               CellState::Empty &&
            chess[row + (distance - 4) * dx[u]][col + (distance - 4) * dy[u]] ==
-               EMPTY))
+               CellState::Empty))
         sum++;
     }
   }
@@ -308,7 +315,7 @@ int Board::sumLiveThree(int row, int col) {
     bool flag = true;
     for (i = 1; checkSame(row + i * dx[u], col + i * dy[u]) || flag; i++) {
       if (!checkSame(row + i * dx[u], col + i * dy[u])) {
-        if (chess[row + i * dx[u]][col + i * dy[u]] != EMPTY) {
+        if (chess[row + i * dx[u]][col + i * dy[u]] != CellState::Empty) {
           sumk -= 10;
         }
         flag = false;
@@ -329,12 +336,12 @@ int Board::sumLiveThree(int row, int col) {
  */
 int Board::calculate(int row, int col) ///
 {
-  if (chess[row][col] != EMPTY)
+  if (chess[row][col] != CellState::Empty)
     return 0;
   int point = 0;
   for (int u = 0; u < 8; u++)
-    if (chess[row + dx[u]][col + dy[u]] != EMPTY &&
-        chess[row + dx[u]][col + dy[u]] != WALL)
+    if (chess[row + dx[u]][col + dy[u]] != CellState::Empty &&
+        chess[row + dx[u]][col + dy[u]] != CellState::WALL)
       point++;
   if (sumFive(row, col))
     return 50000;
@@ -419,7 +426,7 @@ int Board::getScore(int row, int col) { return calculate(row, col); }
  * @return: void
  */
 void Board::AI_1_MAX() {
-  if (chess[8][8] == 0) {
+  if (chess[8][8] == CellState::Empty) {
     row = 8;
     col = 8;
     return;
@@ -428,15 +435,15 @@ void Board::AI_1_MAX() {
 
   if (HEURISTIC) {
     ///启发式搜索
-    for (i = 1; i < N + 1; i++) {
-      for (j = 1; j < N + 1; j++) {
+    for (i = 1; i < BOARD_SIZE + 1; i++) {
+      for (j = 1; j < BOARD_SIZE + 1; j++) {
         orderSort[(i - 1) * 15 + (j - 1)].orderi =
             i; ///给结构体成员赋值i/j/point
         orderSort[(i - 1) * 15 + (j - 1)].orderj = j;
         orderSort[(i - 1) * 15 + (j - 1)].orderpoint = getScore(i, j);
       }
     }
-    std::sort(orderSort, orderSort + N * N, cmp);
+    std::sort(orderSort, orderSort + BOARD_SIZE * BOARD_SIZE, cmp);
     for (i = 0; i < AI_MAX_CHOICE; i++) {
       if (!checkAvailable(orderSort[i].orderi, orderSort[i].orderj))
         continue;
@@ -447,9 +454,10 @@ void Board::AI_1_MAX() {
         col = orderSort[i].orderj;
         return;
       }
-      chess[orderSort[i].orderi][orderSort[i].orderj] = turn;
+      chess[orderSort[i].orderi][orderSort[i].orderj] =
+          static_cast<CellState>(current_player);
       temp = AI_2_MIN(score);
-      chess[orderSort[i].orderi][orderSort[i].orderj] = EMPTY;
+      chess[orderSort[i].orderi][orderSort[i].orderj] = CellState::Empty;
       if (temp > score) {
         score = temp;
         row = orderSort[i].orderi;
@@ -457,14 +465,14 @@ void Board::AI_1_MAX() {
       }
     }
   } else {
-    for (i = 1; i < N + 1; i++) {
-      for (j = 1; j < N + 1; j++) {
+    for (i = 1; i < BOARD_SIZE + 1; i++) {
+      for (j = 1; j < BOARD_SIZE + 1; j++) {
         if (!checkAvailable(i, j))
           continue; //此处可以直接加上checkAround
         temp = getScore(i, j);
-        chess[i][j] = turn;
+        chess[i][j] = static_cast<CellState>(current_player);
         if (temp == 0) {
-          chess[i][j] = EMPTY;
+          chess[i][j] = CellState::Empty;
           continue;
         }
         if (temp == 50000) {
@@ -473,7 +481,7 @@ void Board::AI_1_MAX() {
           return;
         }
         temp = AI_2_MIN(score);
-        chess[i][j] = EMPTY;
+        chess[i][j] = CellState::Empty;
         if (temp > score) {
           score = temp;
           row = i;
@@ -494,26 +502,27 @@ void Board::AI_1_MAX() {
  */
 int Board::AI_2_MIN(int score1) {
   int score = 100000, temp = 0;
-  for (int i = 1; i < N + 1; i++) {
+  for (int i = 1; i < BOARD_SIZE + 1; i++) {
     bool cut1 = false;
-    for (int j = 1; j < N + 1; j++) {
+    for (int j = 1; j < BOARD_SIZE + 1; j++) {
       if (!checkAvailable(i, j))
         continue;
-      int originalTurn = turn;
-      turn = 3 - turn;
+      int originalTurn = static_cast<int>(current_player);
+      current_player = static_cast<Player>(3 - originalTurn);
       temp = getScore(i, j);
-      turn = originalTurn;
-      chess[i][j] = 3 - turn; ///模拟对手下棋
+      current_player = static_cast<Player>(originalTurn);
+      chess[i][j] = static_cast<CellState>(
+          3 - static_cast<int>(current_player)); ///模拟对手下棋
       if (temp == 0) {
-        chess[i][j] = EMPTY;
+        chess[i][j] = CellState::Empty;
         continue;
       }
       if (temp == 50000) {
-        chess[i][j] = EMPTY;
+        chess[i][j] = CellState::Empty;
         return -50000;
       }
       temp = AI_3_MAX(score, temp);
-      chess[i][j] = EMPTY;
+      chess[i][j] = CellState::Empty;
       if (temp < score)
         score = temp; ///第二层取极小值
       if (TURN_ON_CUT2) {
@@ -541,22 +550,22 @@ int Board::AI_2_MIN(int score1) {
  */
 int Board::AI_3_MAX(int score2, int tempp) {
   int score = -100000, temp = 0;
-  for (int i = 1; i < N + 1; i++) {
+  for (int i = 1; i < BOARD_SIZE + 1; i++) {
     bool cut2 = false;
-    for (int j = 1; j < N + 1; j++) {
+    for (int j = 1; j < BOARD_SIZE + 1; j++) {
       if (!checkAvailable(i, j))
         continue;
       temp = getScore(i, j);
-      chess[i][j] = turn;
+      chess[i][j] = static_cast<CellState>(current_player);
       if (temp == 0) {
-        chess[i][j] = 0;
+        chess[i][j] = CellState::Empty;
         continue;
       }
       if (temp == 50000) {
-        chess[i][j] = 0;
+        chess[i][j] = CellState::Empty;
         return 50000;
       }
-      chess[i][j] = EMPTY;
+      chess[i][j] = CellState::Empty;
       if (temp - tempp * 3 > score)
         score = temp - tempp * 3;
       if (TURN_ON_CUT3) {
