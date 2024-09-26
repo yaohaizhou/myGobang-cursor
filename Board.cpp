@@ -1,14 +1,14 @@
 /*
- * @Descripttion: Boardº¯ÊıÊµÏÖ
- * @version: Îå×ÓÆåµÚÈıÌìÆô·¢Ê½ËÑË÷°æ±¾£¨Æô·¢Ê½ËÑË÷+alpha-beta¼ôÖ¦+¼«´ó¼«Ğ¡ÖµËã·¨£©
- * @Author: ÖÜÒ«º£ u201811260@hust.edu.cn
+ * @Descripttion: Boardå‡½æ•°å®ç°
+ * @version: äº”å­æ£‹ç¬¬ä¸‰å¤©å¯å‘å¼æœç´¢ç‰ˆæœ¬ï¼ˆå¯å‘å¼æœç´¢+alpha-betaå‰ªæ+æå¤§æå°å€¼ç®—æ³•ï¼‰
+ * @Author: å‘¨è€€æµ· u201811260@hust.edu.cn
  * @LastEditTime: 2020-02-16 09:48:29
  */
 #include "Board.h"
 
 /**
  * @name: Board
- * @msg: ¹¹Ôìº¯Êı£¬ÓÃÓÚ³õÊ¼»¯²ÎÊı
+ * @msg: æ„é€ å‡½æ•°ï¼Œç”¨äºåˆå§‹åŒ–å‚æ•°
  * @param none
  * @return: void
  */
@@ -17,10 +17,10 @@ Board::Board(sf::RenderWindow* window) : windowPtr(window)
     int i, j;
     for (i = 1; i < N + 1; i++)
         for (j = 1; j < N + 1; j++)
-            chess[i][j] = 0;///³õÊ¼»¯¿ÕµØ
+            chess[i][j] = 0;///åˆå§‹åŒ–ç©ºåœ°
     for(i = 0; i < N + 2; i++)
     {
-        chess[i][0] = WALL;///³õÊ¼»¯Ç½
+        chess[i][0] = WALL;///åˆå§‹åŒ–å¢™
         chess[i][N + 1] = WALL;
     }
     for(j = 0; j < N + 2; j++)
@@ -30,7 +30,7 @@ Board::Board(sf::RenderWindow* window) : windowPtr(window)
     }
     if(DEBUG)
     {
-        ///²âÊÔÓÃÎåÁ¬+»îËÄ
+        ///æµ‹è¯•ç”¨äº”è¿+æ´»å››
         chess[8][8] = BLACK;
         chess[9][8] = BLACK;
         chess[10][8] = BLACK;
@@ -39,22 +39,22 @@ Board::Board(sf::RenderWindow* window) : windowPtr(window)
         chess[9][9] = WHITE;
         chess[10][9] = WHITE;
         chess[11][9] = WHITE;
-        ///²âÊÔÓÃ³åËÄ
+        ///æµ‹è¯•ç”¨å†²å››
         chess[8][1] = BLACK;
         chess[9][1] = BLACK;
         chess[10][1] = BLACK;
         chess[7][1] = WHITE;
-        ///²âÊÔÓÃ»îËÄ
+        ///æµ‹è¯•ç”¨æ´»å››
         chess[8][4] = BLACK;
         chess[9][4] = BLACK;
         chess[11][4] = BLACK;
-        ///²âÊÔÓÃÎåÁ¬
+        ///æµ‹è¯•ç”¨äº”è¿
         chess[8][12] = BLACK;
         chess[9][12] = BLACK;
         chess[10][12] = BLACK;
         chess[11][12] = BLACK;
     }
-    dx = { 1, 1, 0, -1, -1, -1, 0, 1 };///flat¼¼ÊõµÄ8¸ö·½ÏòÏòÁ¿
+    dx = { 1, 1, 0, -1, -1, -1, 0, 1 };///flatæŠ€æœ¯çš„8ä¸ªæ–¹å‘å‘é‡
     dy = { 0, 1, 1, 1, 0, -1, -1, -1 };
     is_end = true;
     for (int i = 0; i < AI_MAX_CHOICE; ++i) {
@@ -63,7 +63,7 @@ Board::Board(sf::RenderWindow* window) : windowPtr(window)
 }
 /**
  * @name: printBoard
- * @msg: ÓÃÓÚ´òÓ¡ÆåÅÌ
+ * @msg: ç”¨äºæ‰“å°æ£‹ç›˜
  * @param none
  * @return: void
  */
@@ -99,8 +99,8 @@ void Board::printBoard()
 }
 /**
  * @name: out
- * @msg: ·ÖÀà±ğ´òÓ¡Æå×ÓºÍ¸ñ×Ó
- * @param {int} i {int} j ´ú±í¶ÔÓ¦µãµÄĞĞºÍÁĞ
+ * @msg: åˆ†ç±»åˆ«æ‰“å°æ£‹å­å’Œæ ¼å­
+ * @param {int} i {int} j ä»£è¡¨å¯¹åº”ç‚¹çš„è¡Œå’Œåˆ—
  * @return: void
  */
 void Board::out(int i, int j)
@@ -123,7 +123,7 @@ void Board::out(int i, int j)
 }
 /**
  * @name: player1
- * @msg: Íæ¼ÒÒ»ÏÂÆå²Ù×÷£¬ÏÈÏÂÆåÔÙ´òÓ¡ÆåÅÌ£¬ÅĞ¶ÏÊÇ·ñÊ¤Àû
+ * @msg: ç©å®¶ä¸€ä¸‹æ£‹æ“ä½œï¼Œå…ˆä¸‹æ£‹å†æ‰“å°æ£‹ç›˜ï¼Œåˆ¤æ–­æ˜¯å¦èƒœåˆ©
  * @param none
  * @return: void
  */
@@ -144,7 +144,7 @@ void Board::player1()
 }
 /**
  * @name: player2
- * @msg: Íæ¼Ò¶şÏÂÆå²Ù×÷£¬ÏÈÏÂÆåÔÙ´òÓ¡ÆåÅÌ£¬ÅĞ¶ÏÊÇ·ñÊ¤Àû
+ * @msg: ç©å®¶äºŒä¸‹æ£‹æ“ä½œï¼Œå…ˆä¸‹æ£‹å†æ‰“å°æ£‹ç›˜ï¼Œåˆ¤æ–­æ˜¯å¦èƒœåˆ©
  * @param none
  * @return: void
  */
@@ -165,7 +165,7 @@ void Board::player2()
 }
 /**
  * @name: checkEnd
- * @msg: ¼ì²éÊÇ·ñ½áÊø£¬ÓÃÅĞ¶ÏÎåÁ¬µÄ·½·¨ÅĞ¶ÏÊÇ·ñÊ¤Àû£¬Èç¹û¿ªÆôdebugÄ£Ê½»áÏÔÊ¾ÆåÅÌËùÓĞµãµÄ´ò·ÖÖµ
+ * @msg: æ£€æŸ¥æ˜¯å¦ç»“æŸï¼Œç”¨åˆ¤æ–­äº”è¿çš„æ–¹æ³•åˆ¤æ–­æ˜¯å¦èƒœåˆ©ï¼Œå¦‚æœå¼€å¯debugæ¨¡å¼ä¼šæ˜¾ç¤ºæ£‹ç›˜æ‰€æœ‰ç‚¹çš„æ‰“åˆ†å€¼
  * @param none
  * @return: void
  */
@@ -174,7 +174,7 @@ void Board::checkEnd()
     for(int u = 0; u < 4; u++)
     {
         if((sameSum(u, getRow(), getCol()) + sameSum(u + 4, getRow(), getCol())) >= 4)
-            is_end = false;//Ó®ÁË
+            is_end = false;//èµ¢äº†
     }
     if(!is_end)
     {
@@ -215,9 +215,9 @@ void Board::checkEnd()
 }
 /**
  * @name: checkSame
- * @msg: ¼ì²éÊÇ·ñÏàÍ¬
- * @param {int} row {int} col ´«ÈëµÄĞĞºÍÁĞ£¬·ÇÈ«¾Ö±äÁ¿ĞĞºÍÁĞ
- * @return: bool ÏàÍ¬Ôò·µ»Øtrue£¬²»Í¬·µ»Øfalse
+ * @msg: æ£€æŸ¥æ˜¯å¦ç›¸åŒ
+ * @param {int} row {int} col ä¼ å…¥çš„è¡Œå’Œåˆ—ï¼Œéå…¨å±€å˜é‡è¡Œå’Œåˆ—
+ * @return: bool ç›¸åŒåˆ™è¿”å›trueï¼Œä¸åŒè¿”å›false
  */
 bool Board::checkSame(int row, int col)
 {
@@ -225,9 +225,9 @@ bool Board::checkSame(int row, int col)
 }
 /**
  * @name: sameSum
- * @msg: ¼ì²éÔÚÒ»¸ö·½ÏòÉÏÏàÍ¬Æå×Ó¸öÊı
- * @param {int} u ´«Èë·½Ïò {int} row {int} col ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: æ£€æŸ¥åœ¨ä¸€ä¸ªæ–¹å‘ä¸Šç›¸åŒæ£‹å­ä¸ªæ•°
+ * @param {int} u ä¼ å…¥æ–¹å‘ {int} row {int} col ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sameSum(int u, int row, int col)
 {
@@ -242,24 +242,24 @@ int Board::sameSum(int u, int row, int col)
 }
 /**
  * @name: checkAvailable
- * @msg: ¼ì²éÊÇ·ñ¿ÉÂä×Ó
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: bool ¿ÉÂä×ÓÎªtrue£¬²»¿ÉÂä×ÓÎªfalse
+ * @msg: æ£€æŸ¥æ˜¯å¦å¯è½å­
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: bool å¯è½å­ä¸ºtrueï¼Œä¸å¯è½å­ä¸ºfalse
  */
 bool Board::checkAvailable(int row, int col)
 {
     return (row >= 1 && row <= 15 && col >= 1 && col <= 15 && chess[row][col] == 0);
 }
-///sumMakeFiveÒªÁì
-///ÔÚ8¸ö·½ÏòÉÏÇó³ÉÎåµã£¬¶ÔÓÚÃ¿¸ö·½Ïò£¬´Óµ±Ç°Î»ÖÃÍùÇ°ÑÓÉì£¬
-///µÚÒ»¸ö²»Í¬É«µÄµãÊÇ¿Õ¸ñ£¬Ìø¹ı¿Õ¸ñ¼ÌĞøÍùÇ°ÑÓÉìÖ±µ½µÚ¶ş¸ö²»Í¬É«µÄµã£¬
-///Í¬Ê±´Óµ±Ç°Î»ÖÃÍù·´·½ÏòÑÓÉìÖ±µ½µÚÒ»¸ö²»Í¬É«µÄµã£¬ ËãÉÏµ±Ç°Î»ÖÃ±¾Éí£¬
-///Èç¹ûÍ¬É«µãµÄÊıÁ¿Ò»¹²ÊÇ4£¬ÄÇÃ´¸Ã·½Ïò¾ÍÓĞ³ÉÎåµã¡£
+///sumMakeFiveè¦é¢†
+///åœ¨8ä¸ªæ–¹å‘ä¸Šæ±‚æˆäº”ç‚¹ï¼Œå¯¹äºæ¯ä¸ªæ–¹å‘ï¼Œä»å½“å‰ä½ç½®å¾€å‰å»¶ä¼¸ï¼Œ
+///ç¬¬ä¸€ä¸ªä¸åŒè‰²çš„ç‚¹æ˜¯ç©ºæ ¼ï¼Œè·³è¿‡ç©ºæ ¼ç»§ç»­å¾€å‰å»¶ä¼¸ç›´åˆ°ç¬¬äºŒä¸ªä¸åŒè‰²çš„ç‚¹ï¼Œ
+///åŒæ—¶ä»å½“å‰ä½ç½®å¾€åæ–¹å‘å»¶ä¼¸ç›´åˆ°ç¬¬ä¸€ä¸ªä¸åŒè‰²çš„ç‚¹ï¼Œ ç®—ä¸Šå½“å‰ä½ç½®æœ¬èº«ï¼Œ
+///å¦‚æœåŒè‰²ç‚¹çš„æ•°é‡ä¸€å…±æ˜¯4ï¼Œé‚£ä¹ˆè¯¥æ–¹å‘å°±æœ‰æˆäº”ç‚¹ã€‚
 /**
  * @name: sumMakeFive
- * @msg: ³ÉÎåµã×ÜÊı£¬ÓÃÀ´¼ÆËã³åËÄµÄ¸öÊı£¬³ÉÎåµãĞÎÊ½ÎªYabcdeY£¬ÆäÖĞabcdeÖĞ4¸ö1,1¸ö0£¬ËùÒÔ¿¼ÂÇ¿ÉÒÔÌø¹ıÒ»¸ö¿Õ¸ñÈ»ºó4¸ö1¡£µ«ÊÇ²»¿ÉÌø¹ı¶Ô·½Æå×Ó»òÕßÇ½±Ú
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: æˆäº”ç‚¹æ€»æ•°ï¼Œç”¨æ¥è®¡ç®—å†²å››çš„ä¸ªæ•°ï¼Œæˆäº”ç‚¹å½¢å¼ä¸ºYabcdeYï¼Œå…¶ä¸­abcdeä¸­4ä¸ª1,1ä¸ª0ï¼Œæ‰€ä»¥è€ƒè™‘å¯ä»¥è·³è¿‡ä¸€ä¸ªç©ºæ ¼ç„¶å4ä¸ª1ã€‚ä½†æ˜¯ä¸å¯è·³è¿‡å¯¹æ–¹æ£‹å­æˆ–è€…å¢™å£
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sumMakeFive(int row, int col)
 {
@@ -293,9 +293,9 @@ int Board::sumMakeFive(int row, int col)
 }
 /**
  * @name: sumLiveFour
- * @msg: »îËÄ×ÜÊı
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: æ´»å››æ€»æ•°
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sumLiveFour(int row, int col)
 {
@@ -303,10 +303,10 @@ int Board::sumLiveFour(int row, int col)
     for(u = 0; u < 4; u++)
     {
         if((sameSum(u + 4, row, col) + sameSum(u, row, col)) >= 3)
-            ///¼ÇÄîÒ»ÏÂ£¬Ç°ºóË³Ğò²»Ò»Ñùµ¼ÖÂdistance²»Ò»Ñù
+            ///è®°å¿µä¸€ä¸‹ï¼Œå‰åé¡ºåºä¸ä¸€æ ·å¯¼è‡´distanceä¸ä¸€æ ·
             ///(sameSum(u,row,col) + sameSum(u+4,row,col)
-            ///Ô­±¾Ğ´µÄÊÇÕâÑùµÄ£¬ºóÃæµÄº¯ÊıºóÔËĞĞ£¬Ê¹ÓÃµÄdistance¾ÍÊÇºóÃæÄÇ¸ö
-            ///ËùÒÔ»îËÄÒ»Ö±Ã»ÓĞÆ¥ÅäÉÏ
+            ///åŸæœ¬å†™çš„æ˜¯è¿™æ ·çš„ï¼Œåé¢çš„å‡½æ•°åè¿è¡Œï¼Œä½¿ç”¨çš„distanceå°±æ˜¯åé¢é‚£ä¸ª
+            ///æ‰€ä»¥æ´»å››ä¸€ç›´æ²¡æœ‰åŒ¹é…ä¸Š
         {
             if(chess[row + distance * dx[u]][col + distance * dy[u]] == EMPTY && chess[row + (distance - 5)*dx[u]][col + (distance - 5)*dy[u]] == EMPTY)
                 sum++;
@@ -316,9 +316,9 @@ int Board::sumLiveFour(int row, int col)
 }
 /**
  * @name: sumMakeFour
- * @msg: ³åËÄ×ÜÊı=³ÉÎåµã×ÜÊı-2*»îËÄ×ÜÊı
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: å†²å››æ€»æ•°=æˆäº”ç‚¹æ€»æ•°-2*æ´»å››æ€»æ•°
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sumMakeFour(int row, int col)
 {
@@ -326,9 +326,9 @@ int Board::sumMakeFour(int row, int col)
 }
 /**
  * @name: sumLiveThree
- * @msg: »îÈı×ÜÊı
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: æ´»ä¸‰æ€»æ•°
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sumLiveThree(int row, int col)
 {
@@ -373,9 +373,9 @@ int Board::sumLiveThree(int row, int col)
 }
 /**
  * @name: calculate
- * @msg: ¼ÆËã·ÖÖµ£¬Èç¹ûÕâ¸öµãÓĞÆå×Ó¼Ç0·Ö£¬Èç¹ûÎåÁ¬Ôò50000·Ö£¬Èç¹û»îËÄÔò4320·Ö£¬Èç¹û»îÈı»òÕß³åËÄÔò720·Ö
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} point ´ò·ÖÖµ
+ * @msg: è®¡ç®—åˆ†å€¼ï¼Œå¦‚æœè¿™ä¸ªç‚¹æœ‰æ£‹å­è®°0åˆ†ï¼Œå¦‚æœäº”è¿åˆ™50000åˆ†ï¼Œå¦‚æœæ´»å››åˆ™4320åˆ†ï¼Œå¦‚æœæ´»ä¸‰æˆ–è€…å†²å››åˆ™720åˆ†
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} point æ‰“åˆ†å€¼
  */
 int Board::calculate(int row, int col)///
 {
@@ -392,9 +392,9 @@ int Board::calculate(int row, int col)///
 }
 /**
  * @name: sumFive
- * @msg: ÎåÁ¬×ÜÊı
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} sum ×ÜÊı
+ * @msg: äº”è¿æ€»æ•°
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} sum æ€»æ•°
  */
 int Board::sumFive(int row, int col)
 {
@@ -408,9 +408,9 @@ int Board::sumFive(int row, int col)
 }
 /**
  * @name: getRow
- * @msg: »ñÈ¡ĞĞ
+ * @msg: è·å–è¡Œ
  * @param none
- * @return: {int} row È«¾Ö±äÁ¿ĞĞ
+ * @return: {int} row å…¨å±€å˜é‡è¡Œ
  */
 int Board::getRow()
 {
@@ -418,9 +418,9 @@ int Board::getRow()
 }
 /**
  * @name: getCol
- * @msg: »ñÈ¡ÁĞ
+ * @msg: è·å–åˆ—
  * @param {type}
- * @return: {int} col È«¾Ö±äÁ¿ÁĞ
+ * @return: {int} col å…¨å±€å˜é‡åˆ—
  */
 int Board::getCol()
 {
@@ -463,9 +463,9 @@ void Board::getMouseLoc()
 }
 /**
  * @name: getScore
- * @msg: ¼ÆËãµ±Ç°µã´ò·ÖÖµ£¬µ«ÊÇÊÇÒÔÄ³Ò»·½µÄµ±Ç°µãÀûÒæÎª²Î¿¼µÄ£¬ÆäÊµ¸üºÃµÄ·½·¨ÊÇscoreAI-scoreHumanµÃ³ö¶ÔÓÚAI×îÓĞÀû£¬¶ÔÓÚÈËÀà×î²»ÀûµÄµã
- * @param {int} row {int} col  ´«ÈëµÄĞĞºÍÁĞ
- * @return: {int} calculate(row,col) µ±Ç°µã´ò·ÖÖµ
+ * @msg: è®¡ç®—å½“å‰ç‚¹æ‰“åˆ†å€¼ï¼Œä½†æ˜¯æ˜¯ä»¥æŸä¸€æ–¹çš„å½“å‰ç‚¹åˆ©ç›Šä¸ºå‚è€ƒçš„ï¼Œå…¶å®æ›´å¥½çš„æ–¹æ³•æ˜¯scoreAI-scoreHumanå¾—å‡ºå¯¹äºAIæœ€æœ‰åˆ©ï¼Œå¯¹äºäººç±»æœ€ä¸åˆ©çš„ç‚¹
+ * @param {int} row {int} col  ä¼ å…¥çš„è¡Œå’Œåˆ—
+ * @return: {int} calculate(row,col) å½“å‰ç‚¹æ‰“åˆ†å€¼
  */
 int Board::getScore(int row, int col)
 {
@@ -473,9 +473,9 @@ int Board::getScore(int row, int col)
 }
 /**
  * @name: AI_1_MAX
- * @msg: µÚÒ»²ãÈô²ÉÓÃÆô·¢Ê½ËÑËØ£¬»á¶Ô225¸öµã½øĞĞÒ»¸öÅÅĞò£¬µÃ·Ö¸ßµÄÓÅÏÈ½øĞĞµÚ¶ş²ãµÄÔËËã£¬Ïàµ±ÓÚĞŞ¸ÄµÚ¶ş²ãµÄË³Ğò£¬ÓĞÀûÓÚ¼ôÖ¦
- * Èô²»²ÉÓÃÆô·¢Ê½ËÑË÷£¬¾Í¶Ô225¸öµãÒÀ´Îµ÷ÓÃ¶ş²ãÔËËã
- * µÚÒ»²ã´ú±íAIµÄÀûÒæ£¬ËùÒÔÈ¡¼«´óÖµ
+ * @msg: ç¬¬ä¸€å±‚è‹¥é‡‡ç”¨å¯å‘å¼æœç´ ï¼Œä¼šå¯¹225ä¸ªç‚¹è¿›è¡Œä¸€ä¸ªæ’åºï¼Œå¾—åˆ†é«˜çš„ä¼˜å…ˆè¿›è¡Œç¬¬äºŒå±‚çš„è¿ç®—ï¼Œç›¸å½“äºä¿®æ”¹ç¬¬äºŒå±‚çš„é¡ºåºï¼Œæœ‰åˆ©äºå‰ªæ
+ * è‹¥ä¸é‡‡ç”¨å¯å‘å¼æœç´¢ï¼Œå°±å¯¹225ä¸ªç‚¹ä¾æ¬¡è°ƒç”¨äºŒå±‚è¿ç®—
+ * ç¬¬ä¸€å±‚ä»£è¡¨AIçš„åˆ©ç›Šï¼Œæ‰€ä»¥å–æå¤§å€¼
  * @param none
  * @return: void
  */
@@ -491,12 +491,12 @@ void Board::AI_1_MAX()
 
     if(HEURISTIC)
     {
-        ///Æô·¢Ê½ËÑË÷
+        ///å¯å‘å¼æœç´¢
         for(i=1;i<N+1;i++)
         {
             for(j=1;j<N+1;j++)
             {
-                orderSort[(i-1)*15+(j-1)].orderi=i;///¸ø½á¹¹Ìå³ÉÔ±¸³Öµi/j/point
+                orderSort[(i-1)*15+(j-1)].orderi=i;///ç»™ç»“æ„ä½“æˆå‘˜èµ‹å€¼i/j/point
                 orderSort[(i-1)*15+(j-1)].orderj=j;
                 orderSort[(i-1)*15+(j-1)].orderpoint=getScore(i,j);
             }
@@ -530,7 +530,7 @@ void Board::AI_1_MAX()
             for(j = 1; j < N + 1; j++)
             {
                 if(!checkAvailable(i, j))
-                    continue;//´Ë´¦¿ÉÒÔÖ±½Ó¼ÓÉÏcheckAround
+                    continue;//æ­¤å¤„å¯ä»¥ç›´æ¥åŠ ä¸ŠcheckAround
                 temp = getScore(i, j);
                 chess[i][j] = turn;
                 if(temp == 0)
@@ -551,7 +551,7 @@ void Board::AI_1_MAX()
                     score = temp;
                     row = i;
                     col = j;
-                }///µÚÒ»²ãÈ¡¼«´óÖµ
+                }///ç¬¬ä¸€å±‚å–æå¤§å€¼
             }
         }
     }
@@ -561,9 +561,9 @@ void Board::AI_1_MAX()
 }
 /**
  * @name: AI_2_MIN
- * @msg: Ä£Äâ¶ÔÊÖ½øĞĞ¶ş²ãÔËËã£¬È¡¼«Ğ¡Öµ
- * @param {int} score1 ´ÓµÚÒ»²ãÏÂÀ´µÄÊı¾İ£¬Õâ¸öÊı¾İÎ¬»¤µÚÒ»²ãµÄ¼«´óÖµ£¬ËùÒÔÈç¹ûµÚ¶ş²ãËã³öÀ´µÄµã±ÈÕâ¸öÖµĞ¡£¬ËµÃ÷¾Í²»ĞèÒªÔÙËãÁË£¬ÒòÎªAI²»¿ÉÄÜÑ¡Õâ¸ö·½°¸ÁË
- * @return: {int} score Î¬»¤µÚ¶ş²ãµÄ¼«Ğ¡Öµ
+ * @msg: æ¨¡æ‹Ÿå¯¹æ‰‹è¿›è¡ŒäºŒå±‚è¿ç®—ï¼Œå–æå°å€¼
+ * @param {int} score1 ä»ç¬¬ä¸€å±‚ä¸‹æ¥çš„æ•°æ®ï¼Œè¿™ä¸ªæ•°æ®ç»´æŠ¤ç¬¬ä¸€å±‚çš„æå¤§å€¼ï¼Œæ‰€ä»¥å¦‚æœç¬¬äºŒå±‚ç®—å‡ºæ¥çš„ç‚¹æ¯”è¿™ä¸ªå€¼å°ï¼Œè¯´æ˜å°±ä¸éœ€è¦å†ç®—äº†ï¼Œå› ä¸ºAIä¸å¯èƒ½é€‰è¿™ä¸ªæ–¹æ¡ˆäº†
+ * @return: {int} score ç»´æŠ¤ç¬¬äºŒå±‚çš„æå°å€¼
  */
 int Board::AI_2_MIN(int score1)
 {
@@ -579,7 +579,7 @@ int Board::AI_2_MIN(int score1)
             turn = 3 - turn;
             temp = getScore(i, j);
             turn = originalTurn;
-            chess[i][j] = 3 - turn; ///Ä£Äâ¶ÔÊÖÏÂÆå
+            chess[i][j] = 3 - turn; ///æ¨¡æ‹Ÿå¯¹æ‰‹ä¸‹æ£‹
             if(temp == 0)
             {
                 chess[i][j] = EMPTY;
@@ -593,7 +593,7 @@ int Board::AI_2_MIN(int score1)
             temp = AI_3_MAX(score,temp);
             chess[i][j] = EMPTY;
             if(temp < score)
-                score = temp;///µÚ¶ş²ãÈ¡¼«Ğ¡Öµ
+                score = temp;///ç¬¬äºŒå±‚å–æå°å€¼
             if(TURN_ON_CUT2)
             {
                 if( score1 > temp)
@@ -613,10 +613,10 @@ int Board::AI_2_MIN(int score1)
 }
 /**
  * @name: AI_3_MAX
- * @msg: µÚÈı²ãÊÇAIÀûÒæ£¬È¡¼«´ó¡£Èç¹ûµÚÈı²ãËã³öÀ´µÄµã±ÈµÚ¶ş²ãµÄ¼«Ğ¡ÖµÒª´ó£¬ËµÃ÷µÚÈı²ãÕâ¸öµã²»¿ÉÄÜÊ¹µÃµÚ¶ş²ãµÄ¼«Ğ¡Öµ±äĞ¡ÁË£¬²»ĞèÒªÔÙËãÁË¡£
- * ÆäÊµ¼«´ó¼«Ğ¡ÖµËã·¨ÊÇÉÏÏÂÁ½²ãÊı¾İĞ±¶Ô½ÇµÄ¹ØÏµ
- * @param {int} score2 ´ÓµÚ¶ş²ã´«ÏÂÀ´µÄÎ¬»¤¼«Ğ¡Öµ {int} tempp µÚ¶ş²ãµ±Ç°¼ÆËãÖµ£¬ÓÃÓÚÌá¸ßÄÑ¶È/ËÙ¶È
- * @return: {int} score ´ÓµÚÈı²ã·µ»Ø¼«´óÖµ
+ * @msg: ç¬¬ä¸‰å±‚æ˜¯AIåˆ©ç›Šï¼Œå–æå¤§ã€‚å¦‚æœç¬¬ä¸‰å±‚ç®—å‡ºæ¥çš„ç‚¹æ¯”ç¬¬äºŒå±‚çš„æå°å€¼è¦å¤§ï¼Œè¯´æ˜ç¬¬ä¸‰å±‚è¿™ä¸ªç‚¹ä¸å¯èƒ½ä½¿å¾—ç¬¬äºŒå±‚çš„æå°å€¼å˜å°äº†ï¼Œä¸éœ€è¦å†ç®—äº†ã€‚
+ * å…¶å®æå¤§æå°å€¼ç®—æ³•æ˜¯ä¸Šä¸‹ä¸¤å±‚æ•°æ®æ–œå¯¹è§’çš„å…³ç³»
+ * @param {int} score2 ä»ç¬¬äºŒå±‚ä¼ ä¸‹æ¥çš„ç»´æŠ¤æå°å€¼ {int} tempp ç¬¬äºŒå±‚å½“å‰è®¡ç®—å€¼ï¼Œç”¨äºæé«˜éš¾åº¦/é€Ÿåº¦
+ * @return: {int} score ä»ç¬¬ä¸‰å±‚è¿”å›æå¤§å€¼
  */
 int Board::AI_3_MAX(int score2,int tempp)
 {
@@ -662,8 +662,8 @@ int Board::AI_3_MAX(int score2,int tempp)
 }
 /**
  * @name: cmp
- * @msg: > Îª½µĞò < ÎªÉıĞò£¬½á¹¹ÌåÊı×é°´ÕÕ³ÉÔ±orderpoint½µĞòÅÅÁĞ
- * @param {Order} x {Order} y Á½¸ö½á¹¹Ìå
+ * @msg: > ä¸ºé™åº < ä¸ºå‡åºï¼Œç»“æ„ä½“æ•°ç»„æŒ‰ç…§æˆå‘˜orderpointé™åºæ’åˆ—
+ * @param {Order} x {Order} y ä¸¤ä¸ªç»“æ„ä½“
  * @return: bool
  */
 bool Board::cmp(Order x,Order y)
