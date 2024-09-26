@@ -57,10 +57,52 @@ Board::Board(sf::RenderWindow* window) : windowPtr(window)
     dx = { 1, 1, 0, -1, -1, -1, 0, 1 };///flat技术的8个方向向量
     dy = { 0, 1, 1, 1, 0, -1, -1, -1 };
     is_end = true;
+    game_over = false;
+    winner = 0;
     for (int i = 0; i < AI_MAX_CHOICE; ++i) {
         orderSort[i] = {0, 0, 0};  // Initialize all fields to 0
     }
 }
+
+void Board::setGameOver(int winning_player)
+{
+    game_over = true;
+    winner = winning_player;
+}
+
+void Board::drawEndGameMessage(sf::RenderWindow& window)
+{
+    sf::Text text;
+    text.setCharacterSize(20);
+    text.setPosition(550, 10);
+
+    if(winner == 1)
+    {
+        text.setString("Black Win!");
+        text.setFillColor(sf::Color::Black);
+    }
+    else if(winner == 2)
+    {
+        text.setString("White Win!");
+        text.setFillColor(sf::Color::White);
+    }
+
+    window.draw(text);
+}
+
+void Board::checkEnd()
+{
+    for(int u = 0; u < 4; u++)
+    {
+        if((sameSum(u, getRow(), getCol()) + sameSum(u + 4, getRow(), getCol())) >= 4)
+        {
+            setGameOver(turn);
+            is_end = false;
+            return;
+        }
+    }
+}
+
 /**
  * @name: printBoard
  * @msg: 用于打印棋盘
@@ -129,6 +171,7 @@ void Board::out(int i, int j)
  */
 void Board::player1()
 {
+    if (game_over) return;
     turn = 1;
     if(FIRST)
     {
@@ -150,6 +193,7 @@ void Board::player1()
  */
 void Board::player2()
 {
+    if (game_over) return;
     turn = 2;
     if(FIRST)
     {
@@ -162,56 +206,6 @@ void Board::player2()
     chess[row][col] = 2;
     printBoard();
     checkEnd();
-}
-/**
- * @name: checkEnd
- * @msg: 检查是否结束，用判断五连的方法判断是否胜利，如果开启debug模式会显示棋盘所有点的打分值
- * @param none
- * @return: void
- */
-void Board::checkEnd()
-{
-    for(int u = 0; u < 4; u++)
-    {
-        if((sameSum(u, getRow(), getCol()) + sameSum(u + 4, getRow(), getCol())) >= 4)
-            is_end = false;//赢了
-    }
-    if(!is_end)
-    {
-        sf::RenderWindow& window = *static_cast<sf::RenderWindow*>(windowPtr);
-        // sf::Font font;
-        // font.loadFromFile("path/to/your/font.ttf");  // Make sure to load a font
-
-        sf::Text text;
-        // text.setFont(font);
-        text.setCharacterSize(20);
-        text.setPosition(550, 10);
-
-        if(turn == 1)
-        {
-            text.setString("Black Win!");
-            text.setFillColor(sf::Color::Black);
-        }
-        else if(turn == 2)
-        {
-            text.setString("White Win!");
-            text.setFillColor(sf::Color::White);
-        }
-
-        window.draw(text);
-        window.display();
-
-        // Wait for a key press
-        sf::Event event;
-        while (window.waitEvent(event))
-        {
-            if (event.type == sf::Event::KeyPressed)
-            {
-                window.close();
-                exit(0);
-            }
-        }
-    }
 }
 /**
  * @name: checkSame
@@ -474,7 +468,7 @@ int Board::getScore(int row, int col)
 /**
  * @name: AI_1_MAX
  * @msg: 第一层若采用启发式搜素，会对225个点进行一个排序，得分高的优先进行第二层的运算，相当于修改第二层的顺序，有利于剪枝
- * 若不采用启发式搜索，就对225个点依次调用二层运算
+ * 若不用启发式搜索，就对225个点依次调用二层运算
  * 第一层代表AI的利益，所以取极大值
  * @param none
  * @return: void

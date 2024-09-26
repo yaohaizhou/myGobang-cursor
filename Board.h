@@ -64,13 +64,20 @@ public:
 
     static bool cmp(Order,Order);
 
+    bool is_end;
+    bool game_over;
+    int winner;  // 0 for no winner, 1 for player 1, 2 for player 2
+
+    // Add these methods
+    bool isGameOver() const { return game_over; }
+    void setGameOver(int winning_player);
+    void drawEndGameMessage(sf::RenderWindow& window);
 
 private:
     int chess[N + 2][N + 2];///棋盘周围有一圈墙
     int row, col, turn;///row为纵向的行,col为横向的列,turn为哪方执子,黑为1,白为2
     std::array<int, 8> dx;///flat技术，8个dx和dy组成8个方向，指向一个棋子的周围8个方向，把各方向统一为直线考虑
     std::array<int, 8> dy;
-    bool is_end;///结束标志，true为未结束，false为结束
     int distance;///返回距离值，在计算是否满足活四、活三时有用
     sf::RenderWindow* windowPtr;
 };

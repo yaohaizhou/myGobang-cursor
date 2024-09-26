@@ -22,8 +22,24 @@ int main()
                 window.close();
         }
 
-        board.player1();
-        board.player2();
+        window.clear(sf::Color::Yellow);
+
+        if (!board.isGameOver())
+        {
+            board.player1();
+            if (!board.isGameOver())
+            {
+                board.player2();
+            }
+        }
+
+        board.printBoard();
+        if (board.isGameOver())
+        {
+            board.drawEndGameMessage(window);
+        }
+
+        window.display();
     }
 
     return 0;
