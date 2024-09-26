@@ -69,19 +69,42 @@ void Board::setGameOver(Player winning_player) {
 }
 
 void Board::drawEndGameMessage(sf::RenderWindow &window) {
-  sf::Text text;
-  text.setCharacterSize(20);
-  text.setPosition(550, 10);
+    // Create a semi-transparent background
+    sf::RectangleShape background(sf::Vector2f(300, 100));
+    background.setFillColor(sf::Color(0, 0, 0, 200)); // Black with 200/255 alpha
+    background.setPosition(120, 220); // Centered on a 540x540 window
 
-  if (winner == Player::Human) {
-    text.setString("Human Win!");
-    text.setFillColor(sf::Color::Black);
-  } else if (winner == Player::AI) {
-    text.setString("AI Win!");
-    text.setFillColor(sf::Color::White);
-  }
+    // Create the message text using basic shapes
+    sf::Text message;
+    if (winner == Player::Human) {
+        message.setString("Human Wins!");
+        message.setFillColor(sf::Color::White);
+    } else if (winner == Player::AI) {
+        message.setString("AI Wins!");
+        message.setFillColor(sf::Color::White);
+    } else {
+        message.setString("Game Over!");
+        message.setFillColor(sf::Color::Yellow);
+    }
 
-  window.draw(text);
+    // Load the font
+    sf::Font font;
+    if (!font.loadFromFile("font/arial.ttf")) {
+        // Handle font loading error
+        std::cerr << "Error loading font" << std::endl;
+        return;
+    }
+    
+    // Set the font for the message
+    message.setFont(font);
+    message.setCharacterSize(24); // Set font size
+
+    // Position the message
+    message.setPosition(170, 250); // Adjust as needed
+    
+    // Draw the background and message
+    window.draw(background);
+    window.draw(message);
 }
 
 void Board::checkEnd() {
@@ -119,6 +142,10 @@ void Board::printBoard() {
     for (int j = 60; j < 510; j += 30) {
       out(i, j);
     }
+  }
+
+  if (game_over) {
+    drawEndGameMessage(window);
   }
 
   window.display();

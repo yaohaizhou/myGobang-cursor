@@ -13,7 +13,8 @@ int main() {
   Board board(&window);
   board.printBoard();
 
-  while (window.isOpen()) {
+  // Game loop
+  while (window.isOpen() && !board.isGameOver()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
@@ -22,19 +23,27 @@ int main() {
 
     window.clear(sf::Color::Yellow);
 
+    board.player1();
     if (!board.isGameOver()) {
-      board.player1();
-      if (!board.isGameOver()) {
-        board.player2();
-      }
+      board.player2();
     }
 
     board.printBoard();
-    if (board.isGameOver()) {
-      board.drawEndGameMessage(window);
-    }
-
     window.display();
+  }
+
+  // End game display loop
+  if (board.isGameOver()) {
+    board.drawEndGameMessage(window);
+    window.display();
+
+    while (window.isOpen()) {
+      sf::Event event;
+      while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+          window.close();
+      }
+    }
   }
 
   return 0;
