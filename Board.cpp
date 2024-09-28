@@ -54,7 +54,6 @@ Board::Board(sf::RenderWindow *window) : windowPtr(window) {
     chess[10][12] = CellState::Black;
     chess[11][12] = CellState::Black;
   }
-  is_end = true;
   game_over = false;
   winner = Player::None;
 
@@ -112,7 +111,6 @@ void Board::checkEnd() {
     if ((sameSum(u, getRow(), getCol()) + sameSum(u + 4, getRow(), getCol())) >=
         4) {
       setGameOver(current_player);
-      is_end = false;
       return;
     }
   }

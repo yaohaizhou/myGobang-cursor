@@ -76,7 +76,6 @@ private:
 
   int row, col;
   Player current_player;
-  bool is_end = true;
   bool game_over;
   int distance;
   Player winner;
