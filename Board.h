@@ -13,19 +13,23 @@
 #include <iostream>
 #include <vector>
 ///下棋模式
-#define DEBUG                                                                  \
-  0 /// 1为开启debug，0为关闭debug，开启debug会在棋局最后显示棋盘各点的评估值
-#define FIRST 0        /// 1为人类执黑先手，0为AI执黑先手
-#define TURN_ON_CUT2 1 /// 1为打开二层剪枝操作，0为关闭
-#define TURN_ON_CUT3 1 /// 1为打开三层剪枝操作，0为关闭，建议两层剪枝都打开
-#define HEURISTIC 1 /// 1为打开启发式搜索，0为关闭，视情况打开
+/// 1为开启debug，0为关闭debug，开启debug会在棋局最后显示棋盘各点的评估值
+#define DEBUG 0
+/// 1为人类执黑先手，0为AI执黑先手
+#define FIRST 0
+/// 1为打开二层剪枝操作，0为关闭
+#define TURN_ON_CUT2 1
+/// 1为打开三层剪枝操作，0为关闭，建议两层剪枝都打开
+#define TURN_ON_CUT3 1
+/// 1为打开启发式搜索，0为关闭，视情况打开
+#define HEURISTIC 1
 /// AI Intelligence
 #define AI_MAX_CHOICE 20 /// AI在启发式搜索时每一步考虑的最大位置数量
 
 ///棋盘样式
 static constexpr int BOARD_SIZE = 15;
 enum class CellState { Empty = 0, Black = 1, White = 2, WALL = 3 };
-enum class Player { None = 0, Human = 2, AI = 1 };
+enum class Player { None = 0, AI = 1, Human = 2 };
 
 class Board {
 public:
